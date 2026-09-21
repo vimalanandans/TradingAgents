@@ -22,6 +22,11 @@ from rich.text import Text
 from cli.announcements import display_announcements, fetch_announcements
 from cli.prefs import load_last_run, sanitize, save_last_run
 from cli.stats_handler import StatsCallbackHandler
+from tradingagents.observability import (
+    add_langfuse_callback,
+    flush_langfuse,
+    langfuse_run_metadata,
+)
 from cli.utils import (
     ask_anthropic_effort,
     ask_gemini_thinking_config,
@@ -1054,6 +1059,7 @@ def run_analysis(checkpoint: bool | None = None, portfolio=None):
 
     # Create stats callback handler for tracking LLM/tool calls
     stats_handler = StatsCallbackHandler()
+    trace_callbacks = add_langfuse_callback([stats_handler])
 
     # Normalize analyst selection to predefined order (selection is a 'set', order is fixed)
     selected_set = {analyst.value for analyst in selections["analysts"]}
@@ -1164,7 +1170,14 @@ def run_analysis(checkpoint: bool | None = None, portfolio=None):
         )
         # Pass callbacks to graph config for tool execution tracking
         # (LLM tracking is handled separately via LLM constructor)
-        args = graph.propagator.get_graph_args(callbacks=[stats_handler])
+        args = graph.propagator.get_graph_args(callbacks=trace_callbacks)
+        args["config"]["run_name"] = "tradingagents.analysis"
+        args["config"]["metadata"] = langfuse_run_metadata(selections)
+        args["config"]["tags"] = [
+            "tradingagents",
+            "analysis",
+            f"asset:{selections['asset_type']}",
+        ]
 
         # Recompile with a checkpointer and inject the thread_id so --checkpoint
         # actually saves and resumes on the CLI path (#1249); a no-op when
@@ -1298,6 +1311,7 @@ def run_analysis(checkpoint: bool | None = None, portfolio=None):
         finally:
             # Always restore the plain uncheckpointed graph, even on failure.
             graph.end_checkpoint()
+            flush_langfuse()
 
         # Update all agent statuses to completed
         for agent in message_buffer.agent_status:
