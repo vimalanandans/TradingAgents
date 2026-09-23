@@ -64,6 +64,23 @@ The existing `StatsCallbackHandler` remains active for the CLI display. It
 continues to provide local aggregate counters while Langfuse provides the
 durable nested trace.
 
+## Context ledger and offline review
+
+For context-loss measurement, set this in `.env` before starting the normal
+CLI:
+
+```dotenv
+TRADINGAGENTS_CONTEXT_TRACE_PATH=results/context-ledger.jsonl
+```
+
+This creates a local JSONL ledger automatically during the run. It records
+lineage, state/message sizes, hashes, tool sizes, and callback usage metadata;
+it does not modify prompts or store raw prompt contents. See
+[`context_observability/README.md`](../context_observability/README.md) for the
+complete workflow and the separate `CONTEXT_ANALYZER_*` settings used to review
+an exported trace with Gemini or OpenAI. Those analyzer settings do not change
+the provider or model used by the live TradingAgents analysis.
+
 ## What this first integration does not claim
 
 Tracing records what the framework sends and receives; it does not yet enforce

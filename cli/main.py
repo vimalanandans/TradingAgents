@@ -23,6 +23,7 @@ from cli.announcements import display_announcements, fetch_announcements
 from cli.prefs import load_last_run, sanitize, save_last_run
 from cli.stats_handler import StatsCallbackHandler
 from tradingagents.observability import (
+    ContextTraceCallback,
     add_langfuse_callback,
     flush_langfuse,
     langfuse_run_metadata,
@@ -1171,6 +1172,15 @@ def run_analysis(checkpoint: bool | None = None, portfolio=None):
         # Pass callbacks to graph config for tool execution tracking
         # (LLM tracking is handled separately via LLM constructor)
         args = graph.propagator.get_graph_args(callbacks=trace_callbacks)
+        context_trace_path = os.getenv("TRADINGAGENTS_CONTEXT_TRACE_PATH")
+        if context_trace_path:
+            trace_callbacks.append(
+                ContextTraceCallback(
+                    context_trace_path,
+                    run_metadata=langfuse_run_metadata(selections),
+                )
+            )
+            args["config"]["callbacks"] = trace_callbacks
         args["config"]["run_name"] = "tradingagents.analysis"
         args["config"]["metadata"] = langfuse_run_metadata(selections)
         args["config"]["tags"] = [
