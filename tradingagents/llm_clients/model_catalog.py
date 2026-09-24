@@ -96,12 +96,15 @@ _MINIMAX_MODELS: dict[str, list[ModelOption]] = {
 MODEL_OPTIONS: ProviderModeOptions = {
     "openai": {
         "quick": [
+            ("GPT-6 Luna - Fast, cost-efficient frontier", "gpt-6-luna"),
             ("GPT-5.6 Luna - Fast, cost-efficient frontier", "gpt-5.6-luna"),
             ("GPT-5.6 Terra - Balances intelligence and cost", "gpt-5.6-terra"),
             ("GPT-5.4 Mini - Fast, strong coding and tool use", "gpt-5.4-mini"),
+            ("GPT-5 Nano - Ultra-fast, lightweight", "gpt-5-nano"),
             ("Custom model ID", "custom"),
         ],
         "deep": [
+            ("GPT-6 Sol - Latest frontier reasoning", "gpt-6-sol"),
             ("GPT-6 Astra - Latest frontier reasoning", "gpt-6-astra"),
             ("GPT-5.6 - Frontier reasoning (Sol)", "gpt-5.6"),
             ("GPT-5.6 Terra - Balances intelligence and cost", "gpt-5.6-terra"),
@@ -233,7 +236,7 @@ def get_model_options(provider: str, mode: str) -> list[ModelOption]:
 # menu, and the explicit ID of a model listed under a shorter name. Known to
 # validation so a config naming one runs without an unknown-model warning.
 LEGACY_MODELS: dict[str, list[str]] = {
-    "openai": ["gpt-5.4", "gpt-5.6-sol"],
+    "openai": ["gpt-5.4", "gpt-5.6-sol", "gpt-nano"],
     "xai": ["grok-4.20-0309-reasoning", "grok-4.20-0309-non-reasoning",
             "grok-4.20-multi-agent-0309"],
     "deepseek": ["deepseek-v4-flash"],
