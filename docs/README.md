@@ -28,6 +28,13 @@ To navigate the inner workings of TradingAgents, refer to the following speciali
 *   **Overview:** The state checkpointing mechanics and the Rich-based terminal user interface.
 *   **Key Concepts:** Per-ticker SQLite databases, signature-hashed thread IDs, state resumes, and multi-panel TUI.
 
+### 6. [Context Management & Evaluation](context_management.md)
+*   **Overview:** A comprehensive review of the framework's state-retention, token budgets, and lookahead guards.
+
+### 7. [Langfuse Observability](langfuse_observability.md)
+*   **Overview:** Optional cloud or self-hosted Langfuse tracing for graph runs, agents, LLM calls, tools, metadata, latency, and provider usage.
+*   **Key Concepts:** The Clean-Slate pattern, nested state-machine isolation, atomic file swapping, and retrospective memory limits.
+
 ---
 
 ## 🚀 High-Level System Architecture
